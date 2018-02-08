@@ -200,7 +200,11 @@
         });
       }
       tab._elem = this.$compile(templateString.trim())(tab._scope);
-      return tab._elem.addClass("tabangular-hide");
+      if (tab.focused) {
+        return tab._elem.removeClass("tabangular-hide");
+      } else {
+        return tab._elem.addClass("tabangular-hide");
+      }
     };
 
     TabsService.prototype._compileContent = function(tab, parentScope, cb) {
@@ -367,7 +371,7 @@
     };
 
     Tab.prototype.focus = function() {
-      var current, len;
+      var current, len, _ref;
       if (this.loading) {
         this.on("loaded", (function(_this) {
           return function() {
@@ -383,7 +387,9 @@
           current.focused = false;
         }
         this.focused = true;
-        this._elem.removeClass("tabangular-hide");
+        if ((_ref = this._elem) != null) {
+          _ref.removeClass("tabangular-hide");
+        }
         removeFromArray(this.area._focusStack, this);
         this.area._focusStack.push(this);
         this.area._persist();
@@ -578,11 +584,28 @@
     };
 
     TabArea.prototype.open = function(tabType, options) {
-      return this.load(tabType, options).focus();
+      var tab;
+      tab = this.load(tabType, options);
+      if (!options.background) {
+        tab.focus();
+      }
+      return tab;
     };
 
     TabArea.prototype.list = function() {
       return this._tabs;
+    };
+
+    TabArea.prototype.anyFocused = function() {
+      var tab, _i, _len, _ref;
+      _ref = this._tabs;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        tab = _ref[_i];
+        if (tab.focused) {
+          return true;
+        }
+      }
+      return false;
     };
 
     return TabArea;

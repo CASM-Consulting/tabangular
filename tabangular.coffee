@@ -150,7 +150,10 @@ class TabsService
     if ctrl?
       @$controller(ctrl, {$scope: tab._scope, Tab: tab})
     tab._elem = @$compile(templateString.trim())(tab._scope)
-    tab._elem.addClass "tabangular-hide"
+    if tab.focused
+      tab._elem.removeClass "tabangular-hide"
+    else
+      tab._elem.addClass "tabangular-hide"
 
 
   _compileContent: (tab, parentScope, cb) ->
@@ -304,7 +307,7 @@ class Tab extends Evented
       
       @focused = true
 
-      @_elem.removeClass "tabangular-hide"
+      @_elem?.removeClass "tabangular-hide"
       removeFromArray @area._focusStack, @
       @area._focusStack.push @
       @area._persist()
@@ -437,12 +440,20 @@ class TabArea extends Evented
         tab.doneLoading()
 
   open: (tabType, options) ->
-    @load(tabType, options).focus()
+    tab = @load(tabType, options)
+    if not options.background
+      tab.focus()
+      
+    tab
 
   list: ->
     @_tabs
 
-
+  anyFocused: ->
+    for tab in @_tabs
+      if tab.focused
+        return true
+    false
 
 tabangular.provider 'Tabs', TabsProvider
 
