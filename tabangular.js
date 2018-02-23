@@ -370,6 +370,23 @@
       return this;
     };
 
+    Tab.prototype.unfocus = function() {
+      var _ref;
+      if (!this.loading) {
+        if (this.closed) {
+          throw new Error("Cannot unfocus closed tab");
+        } else if (this.focused) {
+          if ((_ref = current._elem) != null) {
+            _ref.addClass("tabangular-hide");
+          }
+          this.focused = false;
+          this.area._persist();
+          this.trigger("unfocused");
+        }
+        return this;
+      }
+    };
+
     Tab.prototype.focus = function() {
       var current, len, _ref;
       if (this.loading) {
