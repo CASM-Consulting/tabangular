@@ -294,6 +294,17 @@ class Tab extends Evented
     @autoClose = false
     @
 
+  unfocus: ->
+    if not @loading
+      if @closed
+        throw new Error "Cannot unfocus closed tab"
+      else if @focused
+        current._elem?.addClass "tabangular-hide"
+        @focused = false
+        @area._persist()
+        @trigger "unfocused"
+      @
+
   focus: ->
     if @loading
       @on "loaded", => @focus()
